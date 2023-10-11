@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  room: one
+  read_at: 2023-10-09 23:52:38
+  temperature: 1.5
+  humidity: 1.5
+
+two:
+  room: two
+  read_at: 2023-10-09 23:52:38
+  temperature: 1.5
+  humidity: 1.5
