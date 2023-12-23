@@ -1,0 +1,25 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+living_room:
+  name: Living Room
+
+family_room:
+  name: Family Room
+
+kitchen:
+  name: Kitchen
+
+pantry:
+  name: Pantry
+
+dining_room:
+  name: Dining Room
+
+laundry_room:
+  name: Laundry Room
+
+home_office:
+  name: Home Office
+
+garage:
+  name: Garage
