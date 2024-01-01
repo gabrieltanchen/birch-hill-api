@@ -1,0 +1,58 @@
+name: Ruby CI
+
+on: [push]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@ec02537da5712d66d4d50a0f33b7eb52773b5ed1
+        with:
+          ruby-version: 3.2.1
+      - name: Install dependencies
+        run: bundle install
+      - name: Run linter
+        run: rubocop
+
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports: ['5432:5432']
+        options:
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2.1
+      - name: Install dependencies
+        run: bundle install
+      - name: Create database and run tests
+        env:
+          RAILS_ENV: test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          BIRCH_HILL_API_DATABASE_HOST: localhost
+          BIRCH_HILL_API_DATABASE_PORT: 5432
+          BIRCH_HILL_API_DATABASE_USERNAME: postgres
+          BIRCH_HILL_API_DATABASE_PASSWORD: postgres
+        run: |
+          bundle exec rails db:create
+          bundle exec rails db:migrate
+          bundle exec rake
