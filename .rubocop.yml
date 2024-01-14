@@ -4,6 +4,9 @@ Layout/MultilineMethodCallIndentation:
 Metrics/BlockLength:
   Max: 99
 
+Metrics/ClassLength:
+  Max: 999
+
 Metrics/CyclomaticComplexity:
   Enabled: false
 
@@ -26,4 +29,7 @@ Style/StringLiterals:
   EnforcedStyle: double_quotes
 
 Style/TrailingCommaInArguments:
+  EnforcedStyleForMultiline: consistent_comma
+
+Style/TrailingCommaInHashLiteral:
   EnforcedStyleForMultiline: consistent_comma
