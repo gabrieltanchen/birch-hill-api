@@ -33,5 +33,13 @@ module Types
     def rooms
       Room.all
     end
+
+    field(:temperature_readings, Types::TemperatureReadingType.connection_type, null: false) do
+      argument(:room_id, ID, required: true)
+    end
+    def temperature_readings(room_id:)
+      room = Room.find(room_id)
+      room.temperature_readings.order(recorded_at: :desc)
+    end
   end
 end

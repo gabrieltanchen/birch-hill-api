@@ -1,13 +1,19 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-living_room_reading_1:
+living_room_reading1:
   recorded_at: 2024-01-14 15:21:40
   room: living_room
   temperature: 21.5
   humidity: 45.5
 
-living_room_reading_2:
+living_room_reading2:
   recorded_at: 2024-01-14 15:21:50
   room: living_room
   temperature: 21.6
   humidity: 45.6
+  
+living_room_reading3:
+  recorded_at: 2024-01-14 15:21:45
+  room: living_room
+  temperature: 21.7
+  humidity: 45.7
