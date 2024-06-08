@@ -20,6 +20,7 @@ module Mutations
         end
 
         room.name = name
+        room.key = name.parameterize.underscore
 
         if room.changed? && !room.save
           return {

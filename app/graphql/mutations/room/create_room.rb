@@ -9,7 +9,7 @@ module Mutations
       field(:errors, [String], null: false)
 
       def resolve(name:)
-        room = ::Room.new(name:)
+        room = ::Room.new(name:, key: name.parameterize.underscore)
         if room.save
           {
             errors: [],

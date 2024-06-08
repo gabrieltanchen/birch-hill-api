@@ -8,6 +8,7 @@ class GraphqlRoomsTest < ActionDispatch::IntegrationTest
       query($id: ID!) {
         room(id: $id) {
           id
+          key
           name
         }
       }
@@ -18,6 +19,7 @@ class GraphqlRoomsTest < ActionDispatch::IntegrationTest
 
     room_result = result["data"]["room"]
     assert_equal(room.id.to_s, room_result["id"])
+    assert_equal(room.key, room_result["key"])
     assert_equal(room.name, room_result["name"])
   end
 
@@ -29,6 +31,7 @@ class GraphqlRoomsTest < ActionDispatch::IntegrationTest
             cursor
             node {
               id
+              key
               name
             }
           }
@@ -50,6 +53,7 @@ class GraphqlRoomsTest < ActionDispatch::IntegrationTest
             cursor
             node {
               id
+              key
               name
             }
           }
@@ -63,10 +67,12 @@ class GraphqlRoomsTest < ActionDispatch::IntegrationTest
 
     living_room = rooms(:living_room)
     assert_equal(living_room.id.to_s, first_page_edges[0]["node"]["id"])
+    assert_equal(living_room.key, first_page_edges[0]["node"]["key"])
     assert_equal(living_room.name, first_page_edges[0]["node"]["name"])
 
     family_room = rooms(:family_room)
     assert_equal(family_room.id.to_s, first_page_edges[1]["node"]["id"])
+    assert_equal(family_room.key, first_page_edges[1]["node"]["key"])
     assert_equal(family_room.name, first_page_edges[1]["node"]["name"])
 
     second_page_result = BirchHillApiSchema.execute(
@@ -78,14 +84,17 @@ class GraphqlRoomsTest < ActionDispatch::IntegrationTest
 
     kitchen = rooms(:kitchen)
     assert_equal(kitchen.id.to_s, second_page_edges[0]["node"]["id"])
+    assert_equal(kitchen.key, second_page_edges[0]["node"]["key"])
     assert_equal(kitchen.name, second_page_edges[0]["node"]["name"])
 
     pantry = rooms(:pantry)
     assert_equal(pantry.id.to_s, second_page_edges[1]["node"]["id"])
+    assert_equal(pantry.key, second_page_edges[1]["node"]["key"])
     assert_equal(pantry.name, second_page_edges[1]["node"]["name"])
 
     dining_room = rooms(:dining_room)
     assert_equal(dining_room.id.to_s, second_page_edges[2]["node"]["id"])
+    assert_equal(dining_room.key, second_page_edges[2]["node"]["key"])
     assert_equal(dining_room.name, second_page_edges[2]["node"]["name"])
   end
 
@@ -97,6 +106,7 @@ class GraphqlRoomsTest < ActionDispatch::IntegrationTest
         }) {
           room {
             id
+            key
             name
             createdAt
             updatedAt
@@ -111,6 +121,7 @@ class GraphqlRoomsTest < ActionDispatch::IntegrationTest
     room_id = result["data"]["createRoom"]["room"]["id"]
     room = Room.find(room_id)
     assert_equal("Test room", room.name)
+    assert_equal("test_room", room.key)
     assert_empty(result["data"]["createRoom"]["errors"])
   end
 
@@ -122,6 +133,7 @@ class GraphqlRoomsTest < ActionDispatch::IntegrationTest
         }) {
           room {
             id
+            key
             name
             createdAt
             updatedAt
@@ -149,6 +161,7 @@ class GraphqlRoomsTest < ActionDispatch::IntegrationTest
         }) {
           room {
             id
+            key
             name
             createdAt
             updatedAt
@@ -162,6 +175,7 @@ class GraphqlRoomsTest < ActionDispatch::IntegrationTest
     result = BirchHillApiSchema.execute(query_string, variables: { id: living_room.id, name: living_room.name })
 
     assert_equal(living_room.id.to_s, result["data"]["updateRoom"]["room"]["id"])
+    assert_equal(living_room.key, result["data"]["updateRoom"]["room"]["key"])
     assert_equal(living_room.name, result["data"]["updateRoom"]["room"]["name"])
     assert_empty(result["data"]["updateRoom"]["errors"])
   end
@@ -175,6 +189,7 @@ class GraphqlRoomsTest < ActionDispatch::IntegrationTest
         }) {
           room {
             id
+            key
             name
             createdAt
             updatedAt
@@ -190,6 +205,7 @@ class GraphqlRoomsTest < ActionDispatch::IntegrationTest
 
     assert_equal(living_room.id.to_s, result["data"]["updateRoom"]["room"]["id"])
     assert_equal(updated_name, result["data"]["updateRoom"]["room"]["name"])
+    assert_equal("#{living_room.key}_2", result["data"]["updateRoom"]["room"]["key"])
     assert_empty(result["data"]["updateRoom"]["errors"])
 
     living_room.reload
@@ -205,6 +221,7 @@ class GraphqlRoomsTest < ActionDispatch::IntegrationTest
         }) {
           room {
             id
+            key
             name
             createdAt
             updatedAt
@@ -229,6 +246,7 @@ class GraphqlRoomsTest < ActionDispatch::IntegrationTest
         }) {
           room {
             id
+            key
             name
             createdAt
             updatedAt
