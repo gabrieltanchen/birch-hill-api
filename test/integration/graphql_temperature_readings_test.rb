@@ -94,4 +94,102 @@ class GraphqlTemperatureReadingsTest < ActionDispatch::IntegrationTest
     assert_equal(living_room_reading1.temperature, second_page_edges[0]["node"]["temperature"])
     assert_equal(living_room_reading1.humidity, second_page_edges[0]["node"]["humidity"])
   end
+
+  test("creates a temperature reading") do
+    query_string = <<-GRAPHQL
+      mutation($roomKey: String!, $temperature: Float!, $humidity: Float!) {
+        createTemperatureReading(input: {
+          roomKey: $roomKey
+          temperature: $temperature
+          humidity: $humidity
+        }) {
+          temperatureReading {
+            id
+            temperature
+            humidity
+          }
+          errors
+        }
+      }
+    GRAPHQL
+
+    result = BirchHillApiSchema.execute(
+      query_string,
+      variables: {
+        roomKey: "living_room",
+        temperature: 12.34,
+        humidity: 56.78,
+      },
+    )
+
+    temperature_reading_id = result["data"]["createTemperatureReading"]["temperatureReading"]["id"]
+    temperature_reading = TemperatureReading.find(temperature_reading_id)
+    assert_equal(12.34, temperature_reading.temperature)
+    assert_equal(56.78, temperature_reading.humidity)
+    assert_empty(result["data"]["createTemperatureReading"]["errors"])
+  end
+
+  test("returns an error when the room key does not exist") do
+    query_string = <<-GRAPHQL
+      mutation($roomKey: String!, $temperature: Float!, $humidity: Float!) {
+        createTemperatureReading(input: {
+          roomKey: $roomKey
+          temperature: $temperature
+          humidity: $humidity
+        }) {
+          temperatureReading {
+            id
+            temperature
+            humidity
+          }
+          errors
+        }
+      }
+    GRAPHQL
+
+    result = BirchHillApiSchema.execute(
+      query_string,
+      variables: {
+        roomKey: "unknown_room",
+        temperature: 12.34,
+        humidity: 56.78,
+      },
+    )
+    assert_nil(result["data"]["createTemperatureReading"]["temperatureReading"])
+    assert_equal(["Could not find room with key: unknown_room"], result["data"]["createTemperatureReading"]["errors"])
+  end
+
+  test("returns an error when failing to create a temperature reading") do
+    query_string = <<-GRAPHQL
+      mutation($roomKey: String!, $temperature: Float!, $humidity: Float!) {
+        createTemperatureReading(input: {
+          roomKey: $roomKey
+          temperature: $temperature
+          humidity: $humidity
+        }) {
+          temperatureReading {
+            id
+            temperature
+            humidity
+          }
+          errors
+        }
+      }
+    GRAPHQL
+    temperature_reading = TemperatureReading.new(temperature: 12.34, humidity: 56.78)
+    temperature_reading.errors.add(:base, "Test error")
+    temperature_reading.stubs(:save).returns(false)
+    TemperatureReading.stubs(:new).returns(temperature_reading)
+
+    result = BirchHillApiSchema.execute(
+      query_string,
+      variables: {
+        roomKey: "living_room",
+        temperature: 12.34,
+        humidity: 56.78,
+      },
+    )
+    assert_nil(result["data"]["createTemperatureReading"]["temperatureReading"])
+    assert_equal(["Test error"], result["data"]["createTemperatureReading"]["errors"])
+  end
 end
